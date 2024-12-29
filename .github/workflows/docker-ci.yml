@@ -42,7 +42,7 @@ jobs:
             docker stop finance-app || true
             docker rm finance-app || true
             docker pull 418555018705.dkr.ecr.sa-east-1.amazonaws.com/br.fortal.torres/finance-app:latest
-            docker run -d --name finance-app -p 80:80 418555018705.dkr.ecr.sa-east-1.amazonaws.com/br.fortal.torres/finance-app:latest' > /home/ec2-user/update_docker_image.sh
+            docker run -d --name finance-app -p 3000:3000 418555018705.dkr.ecr.sa-east-1.amazonaws.com/br.fortal.torres/finance-app:latest' > /home/ec2-user/update_docker_image.sh
             chmod +x /home/ec2-user/update_docker_image.sh
             /home/ec2-user/update_docker_image.sh
           EOF
