@@ -1,8 +1,9 @@
 import axios from 'axios';
+console.log('API Base URL:', process.env.NEXT_PUBLIC_API_BASE_URL);
 
 const api = axios.create({
-  //baseURL: 'https://finance-api.torres.fortal.br',
-  baseURL: 'http://127.0.0.1:8080',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  withCredentials: true,
 });
 
 export default api;

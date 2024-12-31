@@ -1,12 +1,13 @@
+// filepath: /Users/torres/git/finance-app/src/app/layout.js
 "use client"; // Indica que esse componente é do lado do cliente
 
-import { SessionProvider } from "next-auth/react";
+import '../app/globals.css';
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <SessionProvider>{children}</SessionProvider>
+        {children}
       </body>
     </html>
   );

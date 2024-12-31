@@ -1,42 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import React, { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
-import api from "../../../api";
+import api from "../../api";
 
-export default function MemberDashboard({ params }) {
-  const { memberId, categoryId } = params; // Obtém o memberId da URL
+export default function MemberCategory({ params }) {
+  const router = useRouter();
+  const [categoryId, setCategoryId] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-
-    const { data: session, status } = useSession();
-    const router = useRouter();
-
-    if (status === "loading") {
-      return <p>Carregando...</p>;
-    }
-
-    if (!session) {
-      router.push("/");
-      return null;
-    }
-
-    const fetchExpenses = async () => {
-      try {
-        const response = await api.get("/expenses/search", {
-          params: { memberId, categoryId },
-        });
-        setExpenses(response.data || []);
-      } catch (err) {
-        setError("Erro ao carregar despesas");
-      }
+    const fetchParams = async () => {
+      const unwrappedParams = await params;
+      setCategoryId(unwrappedParams.categoryId);
     };
 
-    fetchExpenses();
-  }, [memberId]);
+    fetchParams();
+  }, [params]);
+
+  useEffect(() => {
+    if (categoryId) {
+      const fetchExpenses = async () => {
+        try {
+          const response = await api.get("/expenses/search", {
+            params: { categoryId },
+          });
+          setExpenses(response.data || []);
+        } catch (err) {
+          setError("Erro ao carregar despesas");
+        }
+      };
+
+      fetchExpenses();
+    }
+  }, [categoryId, router]);
 
   if (error) {
     return <div className="text-red-500">{error}</div>;
@@ -44,8 +42,7 @@ export default function MemberDashboard({ params }) {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Dashboard do Membro</h1>
-      <h2 className="text-xl mb-2">ID do Membro: {memberId}</h2>
+      <h1 className="text-2xl font-bold mb-4">Despesas do Membro</h1>
       {expenses.length === 0 ? (
             <p>Nenhuma despesa encontrada para este membro.</p>
         ) : (
