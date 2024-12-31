@@ -6,7 +6,8 @@ import Link from "next/link";
 import api from "../../api";
 
 export default function MemberDashboard({ params }) {
-  const { memberId } = params;
+  const router = useRouter();
+  const { memberId } = params; // Obtém o memberId da URL
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
 

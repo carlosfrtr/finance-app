@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import api from "../../../api";
 
@@ -10,6 +11,19 @@ export default function MemberDashboard({ params }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
+    if (status === "loading") {
+      return <p>Carregando...</p>;
+    }
+
+    if (!session) {
+      router.push("/");
+      return null;
+    }
+
     const fetchExpenses = async () => {
       try {
         const response = await api.get("/expenses/search", {

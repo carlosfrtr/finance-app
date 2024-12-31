@@ -1,46 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import api from "../api";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function HomePage() {
-  const [members, setMembers] = useState([]);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const response = await api.get("/members");
-        setMembers(response.data || []);
-      } catch (err) {
-        setError("Erro ao carregar membros");
-      }
-    };
-
-    fetchMembers();
-  }, []);
-
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
-  }
+  const { data: session } = useSession();
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Lista de Membros (futuro login)</h1>
+      <h1 className="text-2xl font-bold mb-4">Login com Google</h1>
 
-      {members.length === 0 ? (
-        <p>Nenhum membro encontrado.</p>
+      {!session ? (
+        <button
+          onClick={() => signIn("google")}
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Login com Google
+        </button>
       ) : (
-        <ul className="list-disc pl-5">
-          {members.map((member) => (
-            <li key={member.id} className="mb-2">
-              <Link href={`/${member.id}`} className="text-blue-500 hover:underline">
-                {member.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div>
+          <p className="mb-4">Olá, {session.user.name}!</p>
+          <button
+            onClick={() => signOut()}
+            className="px-4 py-2 bg-red-500 text-white rounded"
+          >
+            Sair
+          </button>
+        </div>
       )}
     </div>
   );
