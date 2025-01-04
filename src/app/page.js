@@ -2,25 +2,8 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle, faGithub } from '@fortawesome/free-brands-svg-icons';
-import { useEffect, useState } from 'react';
 
 export default function HomePage() {
-  const [ip, setIp] = useState([]);
-  
-  useEffect(() => {
-    const fetchIp = async () => {
-      try {
-        const response = await fetch('/api/ip');
-        const data = await response.json();
-        setIp(data.ip);
-      } catch (err) {
-        console.error('Erro ao obter o IP:', err);
-      }
-    };
-
-    fetchIp();
-  }, []);
-
   const login = (type) => {
     window.location.href = process.env.PUBLIC_SERVER_URL + '/oauth2/authorization/' + type;
   };
@@ -43,9 +26,6 @@ export default function HomePage() {
           <FontAwesomeIcon icon={faGithub} className="mr-2" />
           Login com Github
         </button>
-      </div>
-      <div className="mt-8">
-        <p className="text-center text-gray-500">Seu IP: {ip}</p>
       </div>
     </div>
   );

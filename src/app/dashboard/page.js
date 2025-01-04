@@ -46,11 +46,11 @@ export default function MemberDashboard({ params }) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {categories.map((category) => (
                 <div key={category.id} className="p-4 border rounded shadow">
-                <Link href={`/${category.id}`} className="text-blue-500 hover:underline">
-                  <h3 className="text-lg font-semibold">{category.category}</h3>
-                </Link>
-                <p>Limite mensal: R$ {category.monthlyLimit}</p>
-                <p>Limite gasto: {category.spent}</p>
+                  <Link href={`/category`} className="text-blue-500 hover:underline" onClick={() => handleCategoryClick(category.id)}>
+                    <h3 className="text-lg font-semibold">{category.category}</h3>
+                  </Link>
+                  <p>Limite mensal: R$ {category.monthlyLimit}</p>
+                  <p>Limite gasto: {category.spent}</p>
                 </div>
             ))}
             </div>

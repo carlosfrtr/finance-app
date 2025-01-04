@@ -4,20 +4,21 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 import api from "../../api";
 
-export default function MemberCategory({ params }) {
+export default function MemberCategory() {
   const router = useRouter();
   const [categoryId, setCategoryId] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchParams = async () => {
-      const unwrappedParams = await params;
-      setCategoryId(unwrappedParams.categoryId);
-    };
-
-    fetchParams();
-  }, [params]);
+    const selectedCategory = localStorage.getItem('selectedCategory');
+    if (selectedCategory) {
+      setCategoryId(selectedCategory);
+    } else {
+      // Handle the case where there is no selected category in localStorage
+      setError("Nenhuma categoria selecionada.");
+    }
+  }, []);
 
   useEffect(() => {
     if (categoryId) {
