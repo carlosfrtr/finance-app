@@ -7,6 +7,8 @@ const nextConfig = {
     images: {
         unoptimized: true,
     },
+    basePath: '/finance-app',
+    assetPrefix: '/finance-app/',
 };
 
 export default nextConfig;

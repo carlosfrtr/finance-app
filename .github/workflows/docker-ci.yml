@@ -1,50 +1,50 @@
-name: Build and Push Docker Image
+# name: Build and Push Docker Image
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
         
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: sa-east-1
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: sa-east-1
 
-      - name: Log in to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+#       - name: Log in to Amazon ECR
+#         id: login-ecr
+#         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build the Docker image
-        run: docker build -t 418555018705.dkr.ecr.sa-east-1.amazonaws.com/br.fortal.torres/finance-app:latest .
+#       - name: Build the Docker image
+#         run: docker build -t 418555018705.dkr.ecr.sa-east-1.amazonaws.com/br.fortal.torres/finance-app:latest .
     
-      - name: Push the Docker image
-        run: docker push 418555018705.dkr.ecr.sa-east-1.amazonaws.com/br.fortal.torres/finance-app:latest
+#       - name: Push the Docker image
+#         run: docker push 418555018705.dkr.ecr.sa-east-1.amazonaws.com/br.fortal.torres/finance-app:latest
       
-      - name: Update Docker image on EC2
-        env:
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-        run: |
-          echo "${PRIVATE_KEY}" > private_key.pem
-          chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@ec2.finance.torres.fortal.br << 'EOF'
-            echo '#!/bin/bash
-            aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 418555018705.dkr.ecr.sa-east-1.amazonaws.com
-            docker stop finance-app || true
-            docker rm finance-app || true
-            docker pull 418555018705.dkr.ecr.sa-east-1.amazonaws.com/br.fortal.torres/finance-app:latest
-            docker run -d --name finance-app -p 3000:3000 418555018705.dkr.ecr.sa-east-1.amazonaws.com/br.fortal.torres/finance-app:latest
-            docker image prune -f' > /home/ec2-user/update_docker_image_app.sh
-            chmod +x /home/ec2-user/update_docker_image_app.sh
-            /home/ec2-user/update_docker_image_app.sh
-          EOF
-          rm private_key.pem
+#       - name: Update Docker image on EC2
+#         env:
+#           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+#         run: |
+#           echo "${PRIVATE_KEY}" > private_key.pem
+#           chmod 600 private_key.pem
+#           ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@ec2.finance.torres.fortal.br << 'EOF'
+#             echo '#!/bin/bash
+#             aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 418555018705.dkr.ecr.sa-east-1.amazonaws.com
+#             docker stop finance-app || true
+#             docker rm finance-app || true
+#             docker pull 418555018705.dkr.ecr.sa-east-1.amazonaws.com/br.fortal.torres/finance-app:latest
+#             docker run -d --name finance-app -p 3000:3000 418555018705.dkr.ecr.sa-east-1.amazonaws.com/br.fortal.torres/finance-app:latest
+#             docker image prune -f' > /home/ec2-user/update_docker_image_app.sh
+#             chmod +x /home/ec2-user/update_docker_image_app.sh
+#             /home/ec2-user/update_docker_image_app.sh
+#           EOF
+#           rm private_key.pem
