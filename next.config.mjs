@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const isProd = process.env.NODE_ENV === 'production';
+// const isProd = process.env.NODE_ENV === 'production';
 
 const nextConfig = {
     env: {
@@ -8,8 +8,8 @@ const nextConfig = {
     images: {
         unoptimized: true,
     },
-    basePath: isProd ? '/finance-app' : '',
-    assetPrefix: isProd ? process.env.NEXT_PUBLIC_SERVER_URL : '',
+    basePath: '/finance',
+    assetPrefix: "https://finance.torres.fortal.br",
 };
 
 export default nextConfig;
