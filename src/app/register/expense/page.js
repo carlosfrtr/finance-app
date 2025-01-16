@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import api from "../../../api";
 
 export default function RegisterExpense() {
-  const [member, setMember] = useState(null);
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({ description: "", amount: "", date: "", paymentMethod: "", memberId: "", categoryId: "" });
   const [message, setMessage] = useState("");
