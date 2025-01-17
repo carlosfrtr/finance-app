@@ -1,32 +1,65 @@
 "use client";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGoogle, faGithub } from '@fortawesome/free-brands-svg-icons';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import api from '../api';
 
-export default function HomePage() {
-  const login = (type) => {
-    window.location.href = process.env.PUBLIC_SERVER_URL + '/oauth2/authorization/' + type;
-  };
+export default function MemberDashboard({ params }) {
+  const [member, setMember] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchMember = async () => {
+      const response = await api.get(`/members`);
+      setMember(response.data);
+    };
+
+    fetchMember();
+  }, []);
+
+  useEffect(() => {
+    if (member) {
+      const fetchCategories = async () => {
+        try {
+            const response = await api.get(`/members/categories`);
+            if (response.status >= 300 && response.status < 400) {
+            window.location.href = response.headers.location;
+            return;
+            }
+          setCategories(response.data || []);
+        } catch (err) {
+          setError("Erro ao carregar categorias");
+        }
+      };
+
+      fetchCategories();
+    }
+  }, [member]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-8">Login</h1>
-      <div className="space-y-4">
-        <button
-          onClick={() => login("google")}
-          className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-        >
-          <FontAwesomeIcon icon={faGoogle} className="mr-2" />
-          Login com Google
-        </button>
-        <button
-          onClick={() => login("github")}
-          className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-800"
-        >
-          <FontAwesomeIcon icon={faGithub} className="mr-2" />
-          Login com Github
-        </button>
-      </div>
+    <div className="p-4">
+      {error && <p>{error}</p>}
+      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      {member && <h2 className="text-xl mb-2">{member.name}</h2>}
+      {categories.length === 0 ? (
+            <p>Nenhuma categoria encontrada para este membro.</p>
+        ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {categories.map((category) => (
+                <div key={category.id} className="p-4 border rounded shadow">
+                  <Link href={`/category`} className="text-blue-500 hover:underline" onClick={() => handleCategoryClick(category.id)}>
+                    <h3 className="text-lg font-semibold">{category.category}</h3>
+                  </Link>
+                  <p>Limite mensal: R$ {category.monthlyLimit}</p>
+                  <p>Limite gasto: {category.spent}</p>
+                </div>
+            ))}
+            </div>
+        )}
+        <Link href={`/register/expense`} className="text-blue-500 hover:underline">
+          <h3 className="text-lg font-semibold">Cadastre agora uma despesa!</h3>
+        </Link>
     </div>
   );
 }
