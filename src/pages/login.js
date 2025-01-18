@@ -2,11 +2,22 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle, faGithub } from '@fortawesome/free-brands-svg-icons';
+import { useMemberContext } from '../contexts/member-provider';
+import { useEffect } from 'react';
 
 export default function HomePage() {
   const login = (type) => {
     window.location.href = process.env.PUBLIC_SERVER_URL + '/oauth2/authorization/' + type;
   };
+
+  const { member } = useMemberContext();
+
+  useEffect(() => {
+    if (member && member.id) {
+      window.location.href = '/';
+      // console.log('member', member);
+    }
+  }, [member]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">

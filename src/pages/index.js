@@ -3,33 +3,30 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import api from '../api';
+import { useMemberContext } from '../contexts/member-provider';
 
 export default function MemberDashboard({ params }) {
-  const [member, setMember] = useState(null);
+  const { member } = useMemberContext();
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
 
+  // se member nao definido, redireciona para login
   useEffect(() => {
-    const fetchMember = async () => {
-      const response = await api.get(`/members`);
-      setMember(response.data);
-    };
-
-    fetchMember();
-  }, []);
+    if (!member) {
+      window.location.href = '/login';
+    }
+  }, [member]);
+  
 
   useEffect(() => {
     if (member) {
       const fetchCategories = async () => {
         try {
-            const response = await api.get(`/members/categories`);
-            if (response.status >= 300 && response.status < 400) {
-            window.location.href = response.headers.location;
-            return;
-            }
+          const response = await api.get(`/members/categories`);
           setCategories(response.data || []);
         } catch (err) {
-          setError("Erro ao carregar categorias");
+          setError('Erro ao buscar categorias.');
+          
         }
       };
 
@@ -51,8 +48,7 @@ export default function MemberDashboard({ params }) {
                   <Link href={`/category`} className="text-blue-500 hover:underline" onClick={() => handleCategoryClick(category.id)}>
                     <h3 className="text-lg font-semibold">{category.category}</h3>
                   </Link>
-                  <p>Limite mensal: R$ {category.monthlyLimit}</p>
-                  <p>Limite gasto: {category.spent}</p>
+                  <p>Total gasto: {category.spent}</p>
                 </div>
             ))}
             </div>

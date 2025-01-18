@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import api from "../../../api";
+import api from "../../api";
+import { useMemberContext } from "../../contexts/member-provider";
 
 export default function RegisterExpense() {
+  const { member } = useMemberContext();
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({ description: "", amount: "", date: "", paymentMethod: "", memberId: "", categoryId: "" });
   const [message, setMessage] = useState("");
