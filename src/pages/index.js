@@ -4,6 +4,34 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import api from '../api';
 import { useMemberContext } from '../contexts/member-provider';
+import { PolarArea } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale,
+  ChartOptions,
+  RadialLinearScale,
+  ArcElement
+  } from 'chart.js';
+
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    RadialLinearScale,
+    PointElement,
+    LineElement,
+    TimeScale,
+    Title,
+    Legend,
+    ArcElement,
+    Legend
+   );
 
 export default function MemberDashboard({ params }) {
   const { member } = useMemberContext();
@@ -38,24 +66,26 @@ export default function MemberDashboard({ params }) {
     <div className="p-4">
       {error && <p>{error}</p>}
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-      {member && <h2 className="text-xl mb-2">{member.name}</h2>}
       {categories.length === 0 ? (
             <p>Nenhuma categoria encontrada para este membro.</p>
         ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {categories.map((category) => (
-                <div key={category.id} className="p-4 border rounded shadow">
-                  <Link href={`/category`} className="text-blue-500 hover:underline" onClick={() => handleCategoryClick(category.id)}>
-                    <h3 className="text-lg font-semibold">{category.category}</h3>
-                  </Link>
-                  <p>Total gasto: {category.spent}</p>
-                </div>
-            ))}
+            <div className="p-12 border rounded shadow">
+              <PolarArea
+                data={{
+                  labels: categories.map(category => category.category),
+                  datasets: [
+                    {
+                      label: 'Total Gasto',
+                      data: categories.map(category => category.spent),
+                      backgroundColor: categories.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`),
+                      borderColor: categories.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`),
+                      borderWidth: 1,
+                    },
+                  ],
+                }}
+              />
             </div>
         )}
-        <Link href={`/register/expense`} className="text-blue-500 hover:underline">
-          <h3 className="text-lg font-semibold">Cadastre agora uma despesa!</h3>
-        </Link>
     </div>
   );
 }
