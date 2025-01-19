@@ -69,6 +69,9 @@ export default function MemberDashboard({ params }) {
       {categories.length === 0 ? (
             <p>Nenhuma categoria encontrada para este membro.</p>
         ) : (
+          <>
+            
+
             <div className="p-12 border rounded shadow">
               <PolarArea
                 data={{
@@ -85,6 +88,7 @@ export default function MemberDashboard({ params }) {
                 }}
               />
             </div>
+          </>
         )}
     </div>
   );

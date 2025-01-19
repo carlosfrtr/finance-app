@@ -2,10 +2,30 @@ import React, { useContext, useState } from 'react';
 
 import Link from 'next/link';
 import { useMemberContext } from '../contexts/member-provider';
+import api from '../api';
 
 const Header = () => {
     const { member } = useMemberContext();
     const [menuOpen, setMenuOpen] = useState(false);
+    const [showGroupOptions, setShowGroupOptions] = useState(false);
+    const [newGroupId, setNewGroupId] = useState('');
+
+    const handleGroupChange = async () => {
+        console.log('Updating Group ID' + JSON.stringify({ groupId: newGroupId }));
+        try {
+            const response = await api.patch('/members', { groupId: newGroupId });
+            if (response.ok) {
+                // Handle successful response
+                console.log('Group ID updated successfully');
+                setShowGroupOptions(false);
+            } else {
+                // Handle error response
+                console.error('Failed to update Group ID');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     return (
         <header className="bg-gray-800 text-white p-2 md:p-4">
@@ -71,7 +91,32 @@ const Header = () => {
                             </Link>
                         </nav>
                     )}
-                    {member && <h2 className="text-lg md:text-xl text-white ml-4">{member.name}</h2>}
+                    {member && 
+                    <div className="flex items-center ml-4">
+                        <div className="ml-4 p-2 text-right">
+                            <h3 className="text-lg md:text-xl text-white">{member.name}</h3>
+                            <label className="block text-sm font-semibold text-gray-400">Group ID</label>
+                            <p className="block text-sm font-semibold text-gray-200 cursor-pointer" onClick={() => setShowGroupOptions(!showGroupOptions)}>{member.groupId}</p>
+                            {showGroupOptions && (
+                                <div className="mt-2">
+                                    <input
+                                        type="text"
+                                        value={newGroupId}
+                                        onChange={(e) => setNewGroupId(e.target.value)}
+                                        className="p-2 rounded bg-gray-700 text-white"
+                                        placeholder="Enter new Group ID"
+                                    />
+                                    <button
+                                        onClick={handleGroupChange}
+                                        className="ml-2 p-2 bg-blue-500 rounded text-white"
+                                    >
+                                        Update
+                                    </button>
+                                </div>
+                            )}
+                        
+                        </div>
+                    </div>}
                 </div>
             </div>
         </header>
